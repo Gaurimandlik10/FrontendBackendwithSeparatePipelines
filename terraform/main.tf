@@ -111,3 +111,44 @@ resource "kubernetes_namespace" "proj3_namespace" {
 
   depends_on = [module.eks]
 }
+resource "kubernetes_deployment" "mongo" {
+  metadata {
+    name      = "mongo"
+    namespace = kubernetes_namespace.proj3_namespace.metadata[0].name
+  }
+  spec {
+    replicas = 1
+    selector {
+      match_labels = { app = "mongo" }
+    }
+    template {
+      metadata {
+        labels = { app = "mongo" }
+      }
+      spec {
+        container {
+          name  = "mongo"
+          image = "mongo:6.0"
+          port {
+            container_port = 27017
+          }
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_service" "mongo_service" {
+  metadata {
+    name      = "mongo-service"
+    namespace = kubernetes_namespace.proj3_namespace.metadata[0].name
+  }
+  spec {
+    selector = { app = "mongo" }
+    port {
+      port        = 27017
+      target_port = 27017
+    }
+  }
+  depends_on = [kubernetes_deployment.mongo]
+}

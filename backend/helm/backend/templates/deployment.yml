@@ -39,7 +39,7 @@ spec:
 
           # Startup probe — gives slow containers time to boot
           # liveness won't run until this passes
-          startupProbe:
+          {% comment %} startupProbe:
             httpGet:
               path: {{ .Values.probes.startup.path }}
               port: 3000
@@ -63,4 +63,4 @@ spec:
             initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
             periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
             failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
-        
+         {% endcomment %}
