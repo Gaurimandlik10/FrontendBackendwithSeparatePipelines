@@ -3,6 +3,7 @@ import Nav from "./Nav";
 import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { defaultPost } from "./Create";
+import API_URL from "./config";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -13,13 +14,13 @@ export default function Post() {
   const navigate = useNavigate();
   const [post, setPost] = useState(defaultPost);
   useEffect(() => {
-    fetch(`http://127.0.0.1:4000/posts/fetch/${id}`)
+    fetch(`${API_URL}/posts/fetch/${id}`)
       .then((res) => res.json())
       .then((p) => setPost(p[0]))
       .catch((err) => console.log(err));
   }, [id]);
   function handelDelete(postId) {
-    fetch(`http://127.0.0.1:4000/posts/delete/${postId}`, {
+   fetch(`${API_URL}/posts/delete/${postId}`, {
       method: "DELETE",
     })
       .then(() => navigate("/"))

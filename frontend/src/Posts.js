@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Nav from "./Nav";
 import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
+import API_URL from "./config";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -10,14 +11,14 @@ function classNames(...classes) {
 export default function Posts() {
   const [posts, setPosts] = useState([]);
   useEffect(() => {
-    fetch("http://127.0.0.1:4000/posts/fetch")
+    fetch(`${API_URL}/posts/fetch`)
       .then((res) => res.json())
       .then((p) => setPosts(p))
       .catch((err) => console.log(err));
   }, []);
   function handelDelete(postId) {
     const newPosts = posts.filter((post) => String(post.id) !== postId);
-    fetch(`http://127.0.0.1:4000/posts/delete/${postId}`, {
+    fetch(`${API_URL}/posts/delete/${postId}`, {
       method: "DELETE",
     })
       .then(() => setPosts(newPosts))

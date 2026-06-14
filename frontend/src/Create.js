@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Nav from "./Nav";
 import { useEffect, useState } from "react";
+import API_URL from "./config";
 
 export const defaultPost = {
   id: null,
@@ -20,7 +21,7 @@ function Create() {
   const [post, setPost] = useState(defaultPost);
   useEffect(() => {
     if (id) {
-      fetch(`http://127.0.0.1:4000/posts/fetch/${id}`)
+      fetch(`${API_URL}/posts/fetch/${id}`)
         .then((data) => data.json())
         .then((p) => setPost(p[0] || defaultPost))
         .catch((err) => console.log(err));
@@ -30,7 +31,7 @@ function Create() {
   function submitHandler(e) {
     e.preventDefault();
     if (id !== undefined)
-      fetch(`http://127.0.0.1:4000/posts/update/${id}`, {
+      fetch(`${API_URL}/posts/update/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -40,7 +41,7 @@ function Create() {
         .then(() => navigate("/"))
         .catch((err) => console.log(err));
     else
-      fetch("http://127.0.0.1:4000/posts/create", {
+      fetch(`${API_URL}/posts/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

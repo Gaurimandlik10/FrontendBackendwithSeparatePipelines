@@ -10,6 +10,10 @@ service:
   port: 80
   targetPort: 80
 
+env:
+  REACT_APP_API_URL: "http://ab5011d13a65e417ca6e61d2347e4101-281804149.ap-southeast-2.elb.amazonaws.com"
+
+  
 resources:
   requests:
     cpu: "100m"
