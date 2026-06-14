@@ -23,12 +23,6 @@ spec:
           ports:
             - containerPort: 80
 
-          env:
-            - name: MONGO_URI
-              value: {{ .Values.env.mongoUri }}
-            - name: PORT
-              value: {{ .Values.env.port | quote }}
-
           resources:
             requests:
               cpu: {{ .Values.resources.requests.cpu }}
