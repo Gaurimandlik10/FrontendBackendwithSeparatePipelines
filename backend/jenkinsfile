@@ -1,0 +1,50 @@
+pipeline{
+    agent any
+    environment{
+        AWS_ACCESS_KEY_ID     = credentials('aws-access-key')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
+        AWS_DEFAULT_REGION    = 'ap-southeast-2'
+        AWS_ACCOUNT_ID        = '500345929326'  
+        ECR_REPO              = "devops_projects"
+        IMAGE_TAG             = "backend-${env.BUILD_NUMBER}"
+        ECR_URL               = "${AWS_ACCOUNT_ID}.dkr.ecr.ap-southeast-2.amazonaws.com"
+    }
+    stages{
+        stage('Building docker image'){
+           steps{
+              echo "Building docker image"
+              sh" docker build -t ${ECR_REPO}:${IMAGE_TAG} ./backend"
+        }
+        }
+        stage('Pushed to ECR'){
+          steps{
+            echo "Pushed to ECR"
+            sh"""
+                 aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_URL}
+
+                 docker tag ${ECR_REPO}:${IMAGE_TAG}  ${ECR_URL}/${ECR_REPO}:${IMAGE_TAG}
+                 docker push ${ECR_URL}/${ECR_REPO}:${IMAGE_TAG}
+            """
+        }
+        }
+        stage('Update kubeconfig'){
+            steps{
+                echo "Updating kubeconfig"
+                sh" aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name proj3_cluster"
+            }
+        }
+        stage('Helm Deploy'){
+            steps{
+                echo "Deploying with Helm"
+                 sh"""
+                     helm upgrade --install backend ./backend/helm/backend \
+                     -f ./backend/helm/backend/Values.yml \
+                     --set image.repository=${ECR_URL}/${ECR_REPO} \
+                     --set image.tag=${IMAGE_TAG} \
+                     -n proj3-namespace
+
+                """
+            }
+        }
+    }
+}

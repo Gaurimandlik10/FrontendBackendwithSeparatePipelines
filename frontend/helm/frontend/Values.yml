@@ -1,0 +1,39 @@
+image:
+  repository: 500345929326.dkr.ecr.ap-southeast-2.amazonaws.com/proj2_ecr
+  tag: latest
+  pullPolicy: Always
+
+replicaCount: 2
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+env:
+  mongoUri: "mongodb://mongo-service:27017/todo"
+  port: "3000"
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "250m"
+    memory: "256Mi"
+
+probes:
+  startup:
+    path: /health/live
+    failureThreshold: 30
+    periodSeconds: 10
+  liveness:
+    path: /health/live
+    initialDelaySeconds: 10
+    periodSeconds: 15
+    failureThreshold: 3
+  readiness:
+    path: /health/ready
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 3

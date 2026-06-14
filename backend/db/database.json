@@ -1,0 +1,26 @@
+{
+  "posts": [
+    {
+      "id": "142c7196858b19",
+      "title": "Est enim quo digniss",
+      "body": "Et mollit consequatu",
+      "href": null,
+      "author": {
+        "firstName": "Ross",
+        "lastName": "Byers",
+        "email": "quza@mailinator.com"
+      }
+    },
+    {
+      "id": "148d7da471fafd",
+      "title": "Ratione eaque conseq",
+      "body": "Ex magnam enim exerc",
+      "href": null,
+      "author": {
+        "firstName": "Moses",
+        "lastName": "Stewart",
+        "email": "mala@mailinator.com"
+      }
+    }
+  ]
+}
