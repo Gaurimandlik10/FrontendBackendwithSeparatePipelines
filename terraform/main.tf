@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.0"
+    }
   }
   backend "s3" {
     bucket = "proj2-terraformstatebucket-500345929326-ap-southeast-2-an"
@@ -14,6 +18,16 @@ terraform {
 
 provider "aws" {
   region = "ap-southeast-2"
+}
+
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+  }
 }
 
 resource "aws_vpc" "proj3_vpc" {
@@ -62,6 +76,7 @@ resource "aws_route_table_association" "proj3_rta_2" {
   subnet_id      = aws_subnet.proj3_subnet_2.id
   route_table_id = aws_route_table.proj3_rt.id
 }
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"
@@ -88,4 +103,11 @@ module "eks" {
       tags           = { Name = "eks-worker-nodes" }
     }
   }
+}
+resource "kubernetes_namespace" "proj3_namespace" {
+  metadata {
+    name = "proj3-namespace"
+  }
+
+  depends_on = [module.eks]
 }
