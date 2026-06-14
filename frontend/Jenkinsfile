@@ -11,11 +11,15 @@ pipeline{
     }
     stages{
         stage('Building docker image'){
-            steps{
-                echo "Building docker image"
-                sh "docker build -t ${ECR_REPO}:${IMAGE_TAG} ./frontend"
+          steps{
+              echo "Building docker image"
+              sh """
+                 docker build \
+                 --build-arg REACT_APP_API_URL=http://ab5011d13a65e417ca6e61d2347e4101-281804149.ap-southeast-2.elb.amazonaws.com \
+                 -t ${ECR_REPO}:${IMAGE_TAG} ./frontend
+                """
             }
-        }
+      }
         stage('Pushed to ECR'){
             steps{
                 echo "Pushing to ECR"
