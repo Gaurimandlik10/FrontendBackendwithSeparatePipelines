@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('aws-access-key')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
+        AWS_DEFAULT_REGION    = 'ap-southeast-2'
+    }
+
+    stages {
+
+        stage('Terraform Init') {
+            steps {
+                echo "Initializing Terraform"
+                dir('terraform') {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform Validate') {
+            steps {
+                echo "Validating Terraform code"
+                dir('terraform') {
+                    sh 'terraform validate'
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                echo "Planning infrastructure changes"
+                dir('terraform') {
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                echo "Applying infrastructure changes"
+                dir('terraform') {
+                    sh 'terraform apply -auto-approve'
+                }
+            }
+        }
+
+    }
+
+    post {
+        success {
+            echo '✅ Infrastructure provisioned successfully!'
+        }
+        failure {
+            echo '❌ Terraform pipeline failed. Check the logs!'
+        }
+    }
+}
